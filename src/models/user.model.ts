@@ -23,4 +23,20 @@ export class UserModel {
       throw new Error('Could not retrieve users');
     }
   }
+
+  static async create(user: User): Promise<User> {
+    try {
+      const { id, name, email, age } = user;
+      await db.query('INSERT INTO users (id, name, email, age) VALUES (?, ?, ?, ?)', [id, name, email, age]);
+  
+      const [rows] = await db.query<RowDataPacket[]>('SELECT * FROM users WHERE id = ?', [id]);
+      return rows[0] as User;
+    } catch (error: any) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new Error('Email is already in use');
+      }
+      console.error('Database query error in create:', error);
+      throw new Error('Could not create user');
+    }
+  }
 }
