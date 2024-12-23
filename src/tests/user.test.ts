@@ -24,6 +24,18 @@ describe('User API Endpoints', () => {
     expect(res.body.data).toHaveProperty('updated_at');
   });
 
+  it('should not create a user with an existing email', async () => {
+    const res = await request(app)
+      .post('/api/users')
+      .send({
+        name: 'Another Novandi',
+        email: 'novandi@example.com',
+        age: 35,
+      });
+    expect(res.statusCode).toBe(409);
+    expect(res.body.message).toBe('Email is already in use');
+  });
+
   it('should get all users with pagination metadata', async () => {
     const res = await request(app).get('/api/users');
     expect(res.statusCode).toBe(200);
