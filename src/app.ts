@@ -1,8 +1,13 @@
 import express from 'express';
+import userRoutes from './routes/user.route';
+import logger from './middlewares/logger.middleware';
 
 const app = express();
 
 app.use(express.json());
+app.use(logger);
+
+app.use('/api', userRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
