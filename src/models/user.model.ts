@@ -39,4 +39,14 @@ export class UserModel {
       throw new Error('Could not create user');
     }
   }
+
+  static async findById(id: string): Promise<User | null> {
+    try {
+      const [rows] = await db.query<RowDataPacket[]>('SELECT * FROM users WHERE id = ?', [id]);
+      return rows.length > 0 ? (rows[0] as User) : null;
+    } catch (error) {
+      console.error('Database query error in findById:', error);
+      throw new Error('Could not retrieve user');
+    }
+  }
 }
