@@ -4,7 +4,7 @@
   "description": "Users Management API",
   "main": "dist/app.ts",
   "scripts": {
-    "start": "tsc && node --env-file .env dist/app.js",
+    "start": "tsc && node dist/app.js",
     "dev": "ts-node ./src/app.ts",
     "build": "tsc",
     "test": "jest --setupFiles dotenv/config"
