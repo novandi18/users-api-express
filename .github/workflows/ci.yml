@@ -36,13 +36,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Wait for MySQL to be ready
-        run: |
-          while ! mysqladmin ping -h"localhost" --silent; do
-            echo "Waiting for database connection..."
-            sleep 2
-          done
-
       - name: Configure MySQL database
         env:
           MYSQL_PWD: root
