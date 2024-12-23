@@ -64,4 +64,13 @@ export class UserModel {
       throw new Error('Could not update user');
     }
   }
+
+  static async delete(id: string): Promise<void> {
+    try {
+      await db.query('DELETE FROM users WHERE id = ?', [id]);
+    } catch (error) {
+      console.error('Database query error in delete:', error);
+      throw new Error('Could not delete user');
+    }
+  }
 }
