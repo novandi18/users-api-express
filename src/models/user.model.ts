@@ -49,4 +49,19 @@ export class UserModel {
       throw new Error('Could not retrieve user');
     }
   }
+
+  static async update(id: string, user: Partial<User>): Promise<User> {
+    try {
+      await db.query('UPDATE users SET ? WHERE id = ?', [user, id]);
+  
+      const [rows] = await db.query<RowDataPacket[]>('SELECT * FROM users WHERE id = ?', [id]);
+      return rows[0] as User;
+    } catch (error: any) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new Error('Email is already in use');
+      }
+      console.error('Database query error in update:', error);
+      throw new Error('Could not update user');
+    }
+  }
 }
