@@ -7,6 +7,8 @@ beforeAll(async () => {
 });
 
 describe('User API Endpoints', () => {
+  let userId: string;
+
   it('should create a new user', async () => {
     const res = await request(app)
       .post('/api/users')
@@ -22,6 +24,7 @@ describe('User API Endpoints', () => {
     expect(res.body.data.age).toBe(30);
     expect(res.body.data).toHaveProperty('created_at');
     expect(res.body.data).toHaveProperty('updated_at');
+    userId = res.body.data.id;
   });
 
   it('should not create a user with an existing email', async () => {
@@ -44,6 +47,13 @@ describe('User API Endpoints', () => {
     expect(res.body.meta).toHaveProperty('limit');
     expect(res.body.meta).toHaveProperty('total_pages');
     expect(res.body.meta).toHaveProperty('total_users');
+  });
+
+  it('should get a user by ID', async () => {
+    const res = await request(app).get(`/api/users/${userId}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data).toHaveProperty('id', userId);
+    expect(res.body.data.name).toBe('Novandi');
   });
 });
 
