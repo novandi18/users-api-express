@@ -1,5 +1,7 @@
-import { Request, Response } from 'express';
-import { User, UsersResult } from '../interfaces/user.response';
+import { Request, Response } from 'express'; 
+import { v4 as uuidv4 } from 'uuid';
+import { validate as isUuid } from 'uuid';
+import { User, UserResult, UsersResult } from '../interfaces/user.response';
 import { Result } from '../interfaces/result.response';
 import { UserModel } from '../models/user.model';
 
@@ -25,5 +27,23 @@ export const getAllUsers = async (req: Request, res: Response<UsersResult | Resu
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to retrieve users', success: false });
+  }
+};
+
+// Create a new user
+export const createUser = async (req: Request, res: Response<UserResult | Result>): Promise<void> => {
+  const { name, email, age } = req.body;
+  const id = uuidv4();
+  const user: User = { id, name, email, age };
+
+  try {
+    const newUser = await UserModel.create(user);
+    res.status(201).json({ message: 'User created successfully', success: true, data: newUser });
+  } catch (error: any) {
+    if (error.message === 'Email is already in use') {
+      res.status(409).json({ message: error.message, success: false }); // 409 Conflict
+    } else {
+      res.status(500).json({ message: 'Failed to create user', success: false });
+    }
   }
 };
