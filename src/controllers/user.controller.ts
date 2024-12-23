@@ -47,3 +47,24 @@ export const createUser = async (req: Request, res: Response<UserResult | Result
     }
   }
 };
+
+// Get a user by ID
+export const getUserById = async (req: Request, res: Response<UserResult | Result>): Promise<void> => {
+  const id = req.params.id;
+
+  if (!isUuid(id)) {
+    res.status(400).json({ message: 'User not found', success: false });
+    return;
+  }
+
+  try {
+    const user: User | null = await UserModel.findById(id);
+    if (user) {
+      res.status(200).json({ message: 'User retrieved successfully', success: true, data: user });
+    } else {
+      res.status(404).json({ message: 'User not found', success: false });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to retrieve user', success: false });
+  }
+};
