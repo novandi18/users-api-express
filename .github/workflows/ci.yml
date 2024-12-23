@@ -55,7 +55,7 @@ jobs:
           DB_USER: root
           DB_PASSWORD: root
           DB_NAME: db_users
-        run: npm run start
+        run: npm run build
 
       - name: Run tests
         run: npm test
