@@ -92,7 +92,11 @@ export const updateUser = async (req: Request, res: Response<UserResult | Result
     
     const updatedUserData = { ...existingUser, ...user };
     res.status(200).json({ message: 'User updated successfully', success: true, data: updatedUserData });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to update user', success: false });
+  } catch (error: any) {
+    if (error.message === 'Email is already in use') {
+      res.status(409).json({ message: error.message, success: false }); // 409 Conflict
+    } else {
+      res.status(500).json({ message: 'Failed to update user', success: false });
+    }
   }
 };
