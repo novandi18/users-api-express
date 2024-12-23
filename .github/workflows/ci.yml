@@ -50,12 +50,12 @@ jobs:
           );"
 
       - name: Build and start project
+        run: npm run build
+
+      - name: Run tests
         env:
           DB_HOST: 127.0.0.1
           DB_USER: root
           DB_PASSWORD: root
           DB_NAME: db_users
-        run: npm run build
-
-      - name: Run tests
         run: npm test
