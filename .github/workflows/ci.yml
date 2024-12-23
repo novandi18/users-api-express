@@ -10,6 +10,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: db_users
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        ports:
+          - 3306:3306
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -22,8 +36,33 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build project
+      - name: Wait for MySQL to be ready
+        run: |
+          while ! mysqladmin ping -h"localhost" --silent; do
+            echo "Waiting for database connection..."
+            sleep 2
+          done
+
+      - name: Configure MySQL database
+        env:
+          MYSQL_PWD: root
+        run: |
+          mysql -h 127.0.0.1 -uroot db_users -e "CREATE TABLE users (
+            id CHAR(36) PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            age INT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+          );"
+
+      - name: Build and start project
         run: npm run start
 
       - name: Run tests
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_NAME: db_users
         run: npm test
