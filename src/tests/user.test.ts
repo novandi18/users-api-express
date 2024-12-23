@@ -68,6 +68,36 @@ describe('User API Endpoints', () => {
     expect(res.body.data.name).toBe('Rizka');
     expect(res.body.data.email).toBe('rizka@example.com');
   });
+
+  it('should not update a user with an existing email', async () => {
+    await request(app)
+      .post('/api/users')
+      .send({
+        name: 'Original Rizka',
+        email: 'rizka@example.com',
+        age: 30,
+      });
+  
+    const anotherUserRes = await request(app)
+      .post('/api/users')
+      .send({
+        name: 'Another Rizka',
+        email: 'rizka2@example.com',
+        age: 25,
+      });
+    expect(anotherUserRes.statusCode).toBe(201);
+    const anotherUserId = anotherUserRes.body.data.id;
+  
+    const res = await request(app)
+      .put(`/api/users/${anotherUserId}`)
+      .send({
+        name: 'Duplicate Rizka',
+        email: 'rizka@example.com',
+        age: 26,
+      });
+    expect(res.statusCode).toBe(409);
+    expect(res.body.message).toBe('Email is already in use');
+  });
 });
 
 afterAll(async () => {
