@@ -55,6 +55,19 @@ describe('User API Endpoints', () => {
     expect(res.body.data).toHaveProperty('id', userId);
     expect(res.body.data.name).toBe('Novandi');
   });
+
+  it('should update a user by ID', async () => {
+    const res = await request(app)
+      .put(`/api/users/${userId}`)
+      .send({
+        name: 'Rizka',
+        email: 'rizka@example.com',
+        age: 28,
+      });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.data.name).toBe('Rizka');
+    expect(res.body.data.email).toBe('rizka@example.com');
+  });
 });
 
 afterAll(async () => {
