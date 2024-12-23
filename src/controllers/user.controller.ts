@@ -68,3 +68,31 @@ export const getUserById = async (req: Request, res: Response<UserResult | Resul
     res.status(500).json({ message: 'Failed to retrieve user', success: false });
   }
 };
+
+// Update a user by ID
+export const updateUser = async (req: Request, res: Response<UserResult | Result>): Promise<void> => {
+  const id = req.params.id;
+
+  if (!isUuid(id)) {
+    res.status(400).json({ message: 'Failed to update user', success: false });
+    return;
+  }
+
+  const { name, email, age } = req.body;
+
+  try {
+    const existingUser = await UserModel.findById(id);
+    if (!existingUser) {
+      res.status(404).json({ message: 'User not found', success: false });
+      return;
+    }
+
+    const updatedUser: Partial<User> = { name, email, age };
+    const user = await UserModel.update(id, updatedUser);
+    
+    const updatedUserData = { ...existingUser, ...user };
+    res.status(200).json({ message: 'User updated successfully', success: true, data: updatedUserData });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update user', success: false });
+  }
+};
