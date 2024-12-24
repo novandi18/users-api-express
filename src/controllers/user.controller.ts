@@ -100,3 +100,25 @@ export const updateUser = async (req: Request, res: Response<UserResult | Result
     }
   }
 };
+
+// Delete a user by ID
+export const deleteUser = async (req: Request, res: Response<Result>): Promise<void> => {
+  const id = req.params.id;
+
+  if (!isUuid(id)) {
+    res.status(400).json({ message: 'Failed to delete user', success: false });
+    return;
+  }
+
+  try {
+    const existingUser = await UserModel.findById(id);
+    if (!existingUser) {
+      res.status(404).json({ message: 'User not found', success: false });
+      return;
+    }
+    await UserModel.delete(id);
+    res.status(204).json({ message: 'User deleted successfully', success: true });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete user', success: false });
+  }
+};
