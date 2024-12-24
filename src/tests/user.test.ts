@@ -98,10 +98,19 @@ describe('User API Endpoints', () => {
     expect(res.statusCode).toBe(409);
     expect(res.body.message).toBe('Email is already in use');
   });
+
+  it('should delete a user by ID', async () => {
+    const res = await request(app).delete(`/api/users/${userId}`);
+    expect(res.statusCode).toBe(204);
+  });
+
+  it('should return 404 when getting a deleted user', async () => {
+    const res = await request(app).get(`/api/users/${userId}`);
+    expect(res.statusCode).toBe(404);
+  });
 });
 
 afterAll(async () => {
   await db.query('DELETE FROM users');
   await db.end();
-  
 });
